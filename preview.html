@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statusline Builder</title>
+    <meta name="description" content="自定义你的 Claude Code 状态栏 — 选择进度条样式、配色、目录前缀，实时预览并一键安装。">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== 基础重置 ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --surface-2: #1a1a24;
+            --surface-3: #22222e;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --text: #e4e4e7;
+            --text-muted: #71717a;
+            --text-dim: #52525b;
+            --accent: #7c3aed;
+            --accent-soft: rgba(124, 58, 237, 0.15);
+            --green: #22c55e;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ===== 双栏布局 ===== */
+        .layout {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ===== 左侧：固定面板 ===== */
+        .left-panel {
+            width: 50%;
+            min-width: 440px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 48px 40px;
+            position: relative;
+            /* 微妙的分隔线 */
+            border-right: 1px solid var(--border);
+        }
+
+        .left-content {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #c084fc, #7c3aed, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 终端预览 */
+        .terminal {
+            background: #1e1e2e;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        .terminal.light-mode {
+            background: #f5f5f5;
+        }
+
+        .terminal-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .terminal.light-mode .terminal-bar {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red {
+            background: #ff5f57;
+        }
+
+        .terminal-dot.yellow {
+            background: #febc2e;
+        }
+
+        .terminal-dot.green {
+            background: #28c840;
+        }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .terminal.light-mode .terminal-title {
+            color: #666;
+        }
+
+        .terminal-body {
+            padding: 20px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.9;
+            min-height: 72px;
+        }
+
+        .terminal.light-mode .terminal-body {
+            color: #1e1e2e;
+        }
+
+        /* 预览控制 + 复制按钮行 */
+        .actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mode-toggles {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mode-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+
+        .mode-toggle:hover {
+            border-color: var(--border-hover);
+            color: var(--text);
+        }
+
+        .mode-toggle.active {
+            border-color: var(--accent);
+            color: var(--text);
+            background: var(--accent-soft);
+        }
+
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 10px 24px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 28px rgba(124, 58, 237, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* How to Use */
+        .how-to-use {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+            opacity: 0;
+        }
+
+        .how-to-use.visible {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        .how-to-use-inner {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .how-to-use h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding-top: 2px;
+        }
+
+        .step-text strong {
+            color: var(--text);
+        }
+
+        .step-text code {
+            background: var(--surface-2);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #c084fc;
+        }
+
+        /* ===== 右侧：可滚动配置区 ===== */
+        .right-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 48px 40px;
+            /* 自定义滚动条 */
+            scrollbar-width: thin;
+            scrollbar-color: var(--surface-3) transparent;
+        }
+
+        .right-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .right-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .right-panel::-webkit-scrollbar-thumb {
+            background: var(--surface-3);
+            border-radius: 3px;
+        }
+
+        .config-panel {
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .config-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .config-section h3 {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        /* ===== 选项卡片 ===== */
+        .option-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .option-grid.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .option-grid.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .option-card {
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-3);
+        }
+
+        .option-card.active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .option-card .option-preview {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+
+        .option-card .option-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* 配色卡片 */
+        .color-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .color-dots {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .color-card .option-label {
+            text-align: left;
+            margin-bottom: 0;
+        }
+
+        /* Git 开关 */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .toggle-row label {
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--surface-3);
+            border-radius: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            top: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--accent);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+            background: white;
+        }
+
+        .git-sub-options {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.25s ease;
+        }
+
+        .git-sub-options.expanded {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 860px) {
+            .layout {
+                flex-direction: column;
+                height: auto;
+            }
+
+            html,
+            body {
+                overflow: auto;
+            }
+
+            .left-panel {
+                width: 100%;
+                min-width: unset;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 32px 20px;
+                position: static;
+            }
+
+            .right-panel {
+                overflow: visible;
+                padding: 32px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- ===== 左侧固定面板：标题 + 预览 + 复制 ===== -->
+        <div class="left-panel">
+            <div class="left-content">
+                <div class="header">
+                    <h1>⚡ Statusline Builder</h1>
+                    <p>自定义你的 Claude Code 状态栏，实时预览，一键安装</p>
+                </div>
+
+                <div class="terminal" id="terminal">
+                    <div class="terminal-bar">
+                        <div class="terminal-dot red"></div>
+                        <div class="terminal-dot yellow"></div>
+                        <div class="terminal-dot green"></div>
+                        <div class="terminal-title">statusline preview</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="status-line-1" id="statusLine1"></div>
+                        <div class="status-line-2" id="statusLine2"></div>
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <div class="mode-toggles">
+                        <button class="mode-toggle active" data-mode="dark" onclick="setPreviewMode('dark')">🌙
+                            Dark</button>
+                        <button class="mode-toggle" data-mode="light" onclick="setPreviewMode('light')">☀️
+                            Light</button>
+                    </div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">📋 Copy Install Cmd</button>
+                </div>
+
+                <!-- How to Use（复制后展开） -->
+                <div class="how-to-use" id="howToUse">
+                    <div class="how-to-use-inner">
+                        <h3>✅ 命令已复制！接下来：</h3>
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-num">1</div>
+                                <div class="step-text"><strong>打开终端</strong>，粘贴刚才复制的命令并回车执行</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-num">2</div>
+                                <div class="step-text">看到 <code>✅ Statusline installed!</code> 表示安装成功</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-num">3</div>
+                                <div class="step-text">在 Claude Code settings 中设置
+                                    <code>"statusline": "~/.claude/statusline.sh"</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 右侧可滚动配置区 ===== -->
+        <div class="right-panel">
+            <div class="config-panel">
+
+                <!-- 进度条样式 -->
+                <div class="config-section">
+                    <h3>进度条样式</h3>
+                    <div class="option-grid cols-2" id="progressStyleGrid"></div>
+                </div>
+
+                <!-- 配色方案 -->
+                <div class="config-section">
+                    <h3>配色方案</h3>
+                    <div class="option-grid cols-1" id="colorPresetGrid"></div>
+                </div>
+
+                <!-- 目录前缀 -->
+                <div class="config-section">
+                    <h3>目录前缀</h3>
+                    <div class="option-grid cols-3" id="dirPrefixGrid"></div>
+                </div>
+
+                <!-- Token 格式 -->
+                <div class="config-section">
+                    <h3>Token 显示格式</h3>
+                    <div class="option-grid cols-3" id="tokenFormatGrid"></div>
+                </div>
+
+                <!-- Git 状态 -->
+                <div class="config-section">
+                    <h3>Git 状态</h3>
+                    <div class="toggle-row">
+                        <label>显示 Git 信息</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gitToggle" checked onchange="toggleGit(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="git-sub-options expanded" id="gitSubOptions">
+                        <h3 style="margin-top:4px">分支前缀</h3>
+                        <div class="option-grid cols-3" id="gitPrefixGrid"></div>
+                        <h3 style="margin-top:14px">状态模式</h3>
+                        <div class="option-grid cols-3" id="gitModeGrid"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 配置数据 =====
+
+        const progressStyles = [
+            { id: 'classic', name: 'Classic', filled: '▓', empty: '░', preview: '▓▓▓░░' },
+            { id: 'block', name: 'Block', filled: '█', empty: '░', preview: '███░░' },
+            { id: 'diamond', name: 'Diamond', filled: '◆', empty: '◇', preview: '◆◆◆◇◇' },
+            { id: 'dot', name: 'Dot', filled: '●', empty: '○', preview: '●●●○○' },
+            { id: 'arrow', name: 'Arrow', filled: '▰', empty: '▱', preview: '▰▰▰▱▱' },
+            { id: 'emoji', name: 'Emoji', filled: '🟢', empty: '⚪', preview: '🟢🟢🟢⚪⚪' },
+        ];
+
+        const colorPresets = [
+            {
+                id: 'tokyo-night', name: 'Tokyo Night', model: '#d7afff', low: '#87d7ff', mid: '#d7af5f', high: '#ff8787', token: '#dfdfff',
+                ansi: { model: 183, low: 117, mid: 179, high: 210, token: 189 }
+            },
+            {
+                id: 'catppuccin', name: 'Catppuccin', model: '#d7afff', low: '#afffaf', mid: '#ffffaf', high: '#ff8787', token: '#dfdfff',
+                ansi: { model: 183, low: 157, mid: 229, high: 210, token: 189 }
+            },
+            {
+                id: 'nord', name: 'Nord', model: '#87d7ff', low: '#afd787', mid: '#ffd7af', high: '#af5f5f', token: '#afafd7',
+                ansi: { model: 117, low: 150, mid: 223, high: 131, token: 146 }
+            },
+            {
+                id: 'dracula', name: 'Dracula', model: '#af87ff', low: '#5fff87', mid: '#ffffaf', high: '#ff5f5f', token: '#afafd7',
+                ansi: { model: 141, low: 84, mid: 229, high: 203, token: 189 }
+            },
+            {
+                id: 'cyberpunk', name: 'Cyberpunk', model: '#ff87d7', low: '#5fff00', mid: '#ffff00', high: '#ff0000', token: '#ff87df',
+                ansi: { model: 212, low: 82, mid: 226, high: 196, token: 213 }
+            },
+            {
+                id: 'ocean', name: 'Ocean', model: '#5fd7ff', low: '#00afaf', mid: '#ffd75f', high: '#ff5f87', token: '#87afdf',
+                ansi: { model: 81, low: 37, mid: 221, high: 204, token: 117 }
+            },
+            {
+                id: 'solarized', name: 'Solarized', model: '#00afaf', low: '#87af00', mid: '#af8700', high: '#d75f00', token: '#878787',
+                ansi: { model: 37, low: 106, mid: 136, high: 166, token: 246 }
+            },
+            {
+                id: 'monochrome', name: 'Monochrome', model: '#eeeeee', low: '#878787', mid: '#d0d0d0', high: '#ff5f5f', token: '#bcbcbc',
+                ansi: { model: 255, low: 102, mid: 252, high: 203, token: 248 }
+            },
+        ];
+
+        const dirPrefixes = [
+            { id: 'none', name: '无', char: '' },
+            { id: 'folder', name: '📁', char: '📁' },
+            { id: 'bolt', name: '⚡', char: '⚡' },
+            { id: 'arrow', name: '>', char: '>' },
+            { id: 'flower', name: '🌸', char: '🌸' },
+        ];
+
+        const tokenFormats = [
+            { id: 'full', name: '完整', template: 'Total: input {in}k / output {out}k' },
+            { id: 'compact', name: '紧凑', template: '↑{in}k ↓{out}k' },
+            { id: 'minimal', name: '简约', template: 'in:{in}k out:{out}k' },
+        ];
+
+        const gitPrefixes = [
+            { id: 'none', name: '无', char: '' },
+            { id: 'leaf', name: '🌿', char: '🌿' },
+            { id: 'git', name: 'Git', char: 'git:' },
+        ];
+
+        const gitModes = [
+            { id: 'minimal', name: '极简', preview: '+3 ~2 ?1' },
+            { id: 'short', name: '简洁', preview: 'A3 M2 ?1' },
+            { id: 'detailed', name: '详细', preview: '3 new, 2 modified, 1 untracked' },
+        ];
+
+        // ===== 状态 =====
+        let state = {
+            progressStyle: 'classic',
+            colorPreset: 'tokyo-night',
+            dirPrefix: 'none',
+            tokenFormat: 'full',
+            previewMode: 'dark',
+            gitShow: true,
+            gitPrefix: 'none',
+            gitMode: 'minimal',
+        };
+
+        // ===== 渲染配置面板 =====
+        function renderOptions() {
+            document.getElementById('progressStyleGrid').innerHTML = progressStyles.map(s => `
+            <div class="option-card ${state.progressStyle === s.id ? 'active' : ''}"
+                 onclick="select('progressStyle','${s.id}')">
+                <div class="option-preview">${s.preview}</div>
+                <div class="option-label">${s.name}</div>
+            </div>
+        `).join('');
+
+            document.getElementById('colorPresetGrid').innerHTML = colorPresets.map(c => `
+            <div class="option-card color-card ${state.colorPreset === c.id ? 'active' : ''}"
+                 onclick="select('colorPreset','${c.id}')">
+                <div class="color-dots">
+                    <div class="color-dot" style="background:${c.model}"></div>
+                    <div class="color-dot" style="background:${c.low}"></div>
+                    <div class="color-dot" style="background:${c.mid}"></div>
+                    <div class="color-dot" style="background:${c.high}"></div>
+                </div>
+                <div class="option-label">${c.name}</div>
+            </div>
+        `).join('');
+
+            document.getElementById('dirPrefixGrid').innerHTML = dirPrefixes.map(d => `
+            <div class="option-card ${state.dirPrefix === d.id ? 'active' : ''}"
+                 onclick="select('dirPrefix','${d.id}')">
+                <div class="option-preview">${d.char || '—'}</div>
+                <div class="option-label">${d.name}</div>
+            </div>
+        `).join('');
+
+            document.getElementById('tokenFormatGrid').innerHTML = tokenFormats.map(t => `
+            <div class="option-card ${state.tokenFormat === t.id ? 'active' : ''}"
+                 onclick="select('tokenFormat','${t.id}')">
+                <div class="option-label">${t.name}</div>
+            </div>
+        `).join('');
+
+            // Git 前缀
+            document.getElementById('gitPrefixGrid').innerHTML = gitPrefixes.map(g => `
+            <div class="option-card ${state.gitPrefix === g.id ? 'active' : ''}"
+                 onclick="select('gitPrefix','${g.id}')">
+                <div class="option-preview">${g.char || '—'}</div>
+                <div class="option-label">${g.name}</div>
+            </div>
+        `).join('');
+
+            // Git 模式
+            document.getElementById('gitModeGrid').innerHTML = gitModes.map(m => `
+            <div class="option-card ${state.gitMode === m.id ? 'active' : ''}"
+                 onclick="select('gitMode','${m.id}')">
+                <div class="option-preview" style="font-size:0.78rem">${m.preview}</div>
+                <div class="option-label">${m.name}</div>
+            </div>
+        `).join('');
+
+            // Git toggle 状态同步
+            document.getElementById('gitToggle').checked = state.gitShow;
+            document.getElementById('gitSubOptions').classList.toggle('expanded', state.gitShow);
+        }
+
+        function select(key, value) {
+            state[key] = value;
+            renderOptions();
+            updatePreview();
+        }
+
+        function toggleGit(checked) {
+            state.gitShow = checked;
+            renderOptions();
+            updatePreview();
+        }
+
+        // ===== 预览模式 =====
+        function setPreviewMode(mode) {
+            state.previewMode = mode;
+            document.getElementById('terminal').classList.toggle('light-mode', mode === 'light');
+            document.querySelectorAll('.mode-toggle').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            updatePreview();
+        }
+
+        // ===== 实时预览 =====
+        function updatePreview() {
+            const color = colorPresets.find(c => c.id === state.colorPreset);
+            const pStyle = progressStyles.find(s => s.id === state.progressStyle);
+            const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
+            const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
+            const isLight = state.previewMode === 'light';
+
+            const percent = 32;
+            const filled = Math.round(percent / 10);
+            const empty = 10 - filled;
+            const bar = pStyle.filled.repeat(filled) + pStyle.empty.repeat(empty);
+            const tokenText = tFormat.template.replace('{in}', '216').replace('{out}', '15');
+            const barColor = color.low;
+
+            document.getElementById('statusLine1').innerHTML =
+                `<span style="color:${color.model}">[Opus 4.6]</span> ` +
+                `<span style="color:${barColor}">${bar} ${percent}%</span> ` +
+                `<span style="color:${color.token}; opacity:0.8">| ${tokenText}</span>`;
+
+            const dirColor = isLight ? '#444' : color.low;
+            const gitColor = isLight ? '#666' : color.model;
+            const dirChar = prefix.char || '';
+
+            let line2 = `<span style="color:${dirColor}">${dirChar}~/claude-code</span>`;
+
+            if (state.gitShow) {
+                const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
+                const branchLabel = gPrefix.char ? `${gPrefix.char}(main)` : '(main)';
+                line2 += ` <span style="color:${gitColor}">${branchLabel}</span>`;
+                line2 += ` <span style="color:${color.high}">✗</span> `;
+
+                if (state.gitMode === 'minimal') {
+                    line2 += `<span style="color:${color.low}">+3</span> `;
+                    line2 += `<span style="color:${color.mid}">~2</span> `;
+                    line2 += `<span style="color:${color.token}">?1</span>`;
+                } else if (state.gitMode === 'short') {
+                    line2 += `<span style="color:${color.low}">A3</span> `;
+                    line2 += `<span style="color:${color.mid}">M2</span> `;
+                    line2 += `<span style="color:${color.token}">?1</span>`;
+                } else {
+                    line2 += `<span style="color:${color.low}">3 new</span> `;
+                    line2 += `<span style="color:${color.mid}">2 modified</span> `;
+                    line2 += `<span style="color:${color.token}">1 untracked</span>`;
+                }
+            }
+
+            document.getElementById('statusLine2').innerHTML = line2;
+        }
+
+        // ===== 生成安装脚本 =====
+        function generateScript() {
+            const color = colorPresets.find(c => c.id === state.colorPreset);
+            const pStyle = progressStyles.find(s => s.id === state.progressStyle);
+            const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
+            const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
+            const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
+
+            let tokenPrintf;
+            if (tFormat.id === 'full') {
+                tokenPrintf = `printf "\${TOKEN_COLOR}| Total: input %sk / output %sk\${RESET}" "$input_k" "$output_k"`;
+            } else if (tFormat.id === 'compact') {
+                tokenPrintf = `printf "\${TOKEN_COLOR}↑%sk ↓%sk\${RESET}" "$input_k" "$output_k"`;
+            } else {
+                tokenPrintf = `printf "\${TOKEN_COLOR}in:%sk out:%sk\${RESET}" "$input_k" "$output_k"`;
+            }
+
+            let dirDisplay;
+            if (prefix.char) {
+                dirDisplay = `echo "${prefix.char}\${parent}/\${current}"`;
+            } else {
+                dirDisplay = `echo "~/\${parent}/\${current}"`;
+            }
+
+            // Git 分支格式
+            let gitBranchFmt;
+            if (gPrefix.id === 'git') {
+                gitBranchFmt = 'git:(\${git_branch})';
+            } else if (gPrefix.char) {
+                gitBranchFmt = `${gPrefix.char}(\${git_branch})`;
+            } else {
+                gitBranchFmt = '(\${git_branch})';
+            }
+
+            // Git 计数格式
+            let gitCountsFmt;
+            if (state.gitMode === 'minimal') {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}+%s\${RESET}" "$added"
+            [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}~%s\${RESET}" "$modified"
+            [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}?%s\${RESET}" "$untracked"`;
+            } else if (state.gitMode === 'short') {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}A%s\${RESET}" "$added"
+            [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}M%s\${RESET}" "$modified"
+            [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}?%s\${RESET}" "$untracked"`;
+            } else {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}%s new\${RESET}" "$added"
+            [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}%s modified\${RESET}" "$modified"
+            [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}%s untracked\${RESET}" "$untracked"`;
+            }
+
+            const a = color.ansi;
+
+            return `#!/bin/bash
+# Statusline Builder — 自动生成
+# 配色: ${color.name} | 样式: ${pStyle.name} | 前缀: ${prefix.name}
+
+JSON_INPUT=$(cat)
+
+model=$(echo "$JSON_INPUT" | jq -r '.model.display_name // "Claude"')
+input=$(echo "$JSON_INPUT" | jq -r '.context_window.total_input_tokens // 0')
+output=$(echo "$JSON_INPUT" | jq -r '.context_window.total_output_tokens // 0')
+percent=$(echo "$JSON_INPUT" | jq -r '.context_window.used_percentage // 0')
+cwd=$(echo "$JSON_INPUT" | jq -r '.cwd // (.workspace.current_dir // "")')
+
+MODEL_COLOR="\\033[38;5;${a.model}m"
+RESET="\\033[0m"
+PROGRESS_LOW="\\033[38;5;${a.low}m"
+PROGRESS_MID="\\033[38;5;${a.mid}m"
+PROGRESS_HIGH="\\033[38;5;${a.high}m"
+TOKEN_COLOR="\\033[38;5;${a.token}m"
+DIR_COLOR="\\033[38;5;${a.low}m"
+GIT_COLOR="\\033[38;5;${a.model}m"
+GIT_CLEAN="\\033[38;5;${a.low}m"
+GIT_DIRTY="\\033[38;5;${a.high}m"
+
+PROGRESS_FILLED="${pStyle.filled}"
+PROGRESS_EMPTY="${pStyle.empty}"
+
+get_progress_color() {
+    local p=$1
+    if (( p < 50 )); then echo -e "$PROGRESS_LOW"
+    elif (( p < 80 )); then echo -e "$PROGRESS_MID"
+    else echo -e "$PROGRESS_HIGH"
+    fi
+}
+
+get_progress_bar() {
+    local p=$1
+    local filled=$((p / 10))
+    local empty=$((10 - filled))
+    local bar=""
+    for ((i=0; i<filled; i++)); do bar+="\${PROGRESS_FILLED}"; done
+    for ((i=0; i<empty; i++)); do bar+="\${PROGRESS_EMPTY}"; done
+    echo "$bar"
+}
+
+get_directory() {
+    local dir="$1"
+    local parent=$(basename "$(dirname "$dir")")
+    local current=$(basename "$dir")
+    if [[ "$parent" == "/" || -z "$parent" ]]; then
+        ${prefix.char ? `echo "${prefix.char}\${current}"` : `echo "~/\${current}"`}
+    else
+        ${dirDisplay}
+    fi
+}
+
+get_git_branch() { git -C "$1" rev-parse --abbrev-ref HEAD 2>/dev/null; }
+get_git_status() {
+    if git -C "$1" diff --quiet 2>/dev/null && git -C "$1" diff --cached --quiet 2>/dev/null; then
+        echo "clean"
+    else
+        echo "dirty"
+    fi
+}
+
+get_git_counts() {
+    local dir="$1"
+    local added=$(git -C "$dir" diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')
+    local modified=$(git -C "$dir" diff --numstat 2>/dev/null | wc -l | tr -d ' ')
+    local untracked=$(git -C "$dir" ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
+    echo "$added $modified $untracked"
+}
+
+format_tokens() { echo $(($1 / 1000)); }
+
+progress_color=$(get_progress_color "$percent")
+progress_bar=$(get_progress_bar "$percent")
+directory=$(get_directory "$cwd")
+input_k=$(format_tokens "$input")
+output_k=$(format_tokens "$output")
+
+printf "\${MODEL_COLOR}[\${model}]\${RESET} "
+printf "\${progress_color}\${progress_bar} \${percent}%%\${RESET} "
+${tokenPrintf}
+printf "\\n"
+
+printf "\${DIR_COLOR}\${directory}\${RESET}"
+${state.gitShow ? `if [[ -n "$cwd" ]]; then
+    git_branch=$(get_git_branch "$cwd")
+    if [[ -n "$git_branch" ]]; then
+        git_status=$(get_git_status "$cwd")
+        printf " \${GIT_COLOR}${gitBranchFmt}\${RESET}"
+        if [[ "$git_status" == "clean" ]]; then
+            printf " \${GIT_CLEAN}✓\${RESET}"
+        else
+            printf " \${GIT_DIRTY}✗\${RESET}"
+            read added modified untracked <<< "$(get_git_counts "$cwd")"
+            ${gitCountsFmt}
+        fi
+    fi
+fi` : '# Git 信息已关闭'}
+`;
+        }
+
+        // ===== 复制安装命令 =====
+        function copyInstallCmd() {
+            const script = generateScript();
+            const command = `mkdir -p ~/.claude && cat > ~/.claude/statusline.sh << 'STATUSLINE_EOF'\n${script}\nSTATUSLINE_EOF\nchmod +x ~/.claude/statusline.sh && echo "✅ Statusline installed!"`;
+
+            const doCopy = (text) => {
+                // 优先用 clipboard API，file:// 下 fallback 到 execCommand
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
+                }
+            };
+
+            const fallbackCopy = (text) => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                onCopied();
+            };
+
+            const onCopied = () => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = '✅ Copied!';
+                btn.classList.add('copied');
+                document.getElementById('howToUse').classList.add('visible');
+                setTimeout(() => {
+                    btn.innerHTML = '📋 Copy Install Cmd';
+                    btn.classList.remove('copied');
+                }, 3000);
+            };
+
+            doCopy(command);
+        }
+
+        // ===== 初始化 =====
+        renderOptions();
+        updatePreview();
+    </script>
+</body>
+
+</html>
