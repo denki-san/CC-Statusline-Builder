@@ -1,6 +1,9 @@
 # Statusline Builder
 
 自定义你的 Claude Code 状态栏 —— 可视化配置，实时预览，一键安装。
+<img width="483" height="104" alt="image" src="https://github.com/user-attachments/assets/7c2f60b9-34b6-4e37-98b6-82001f31fd64" />
+
+
 
 ## 预览
 
