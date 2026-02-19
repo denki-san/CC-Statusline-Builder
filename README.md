@@ -1,4 +1,5 @@
 # Statusline Builder
+<img width="1269" height="621" alt="Google Chrome 2026-02-19 21 20 05" src="https://github.com/user-attachments/assets/3ff052d3-8b97-47d4-b8e1-c61788e89bc4" />
 
 自定义你的 Claude Code 状态栏 —— 可视化配置，实时预览，一键安装。
 <img width="483" height="104" alt="image" src="https://github.com/user-attachments/assets/7c2f60b9-34b6-4e37-98b6-82001f31fd64" />
