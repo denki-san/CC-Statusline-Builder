@@ -7,7 +7,7 @@
     <title>Statusline Builder</title>
     <meta name="description" content="自定义你的 Claude Code 状态栏 — 选择进度条样式、配色、目录前缀，实时预览并一键安装。">
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap"
         rel="stylesheet">
     <style>
         /* ===== 基础重置 ===== */
@@ -20,17 +20,28 @@
         }
 
         :root {
-            --bg: #0a0a0f;
-            --surface: #13131a;
-            --surface-2: #1a1a24;
-            --surface-3: #22222e;
-            --border: rgba(255, 255, 255, 0.06);
-            --border-hover: rgba(255, 255, 255, 0.12);
-            --text: #e4e4e7;
-            --text-muted: #71717a;
-            --text-dim: #52525b;
-            --accent: #7c3aed;
-            --accent-soft: rgba(124, 58, 237, 0.15);
+            /* Warm Earth / Stone Theme */
+            --bg: #1c1917;
+            /* Stone 900 */
+            --surface: #292524;
+            /* Stone 800 */
+            --surface-2: #44403c;
+            /* Stone 700 */
+            --surface-3: #57534e;
+            /* Stone 600 */
+            --border: #57534e;
+            /* Stone 600 */
+            --border-hover: #78716c;
+            /* Stone 500 */
+            --text: #e7e5e4;
+            /* Stone 200 */
+            --text-muted: #a8a29e;
+            /* Stone 400 */
+            --text-dim: #78716c;
+            /* Stone 500 */
+            --accent: #b45309;
+            /* Burnished Bronze */
+            --accent-soft: rgba(180, 83, 9, 0.15);
             --green: #22c55e;
             --radius: 12px;
             --radius-sm: 8px;
@@ -83,11 +94,10 @@
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            font-family: 'Playfair Display', serif;
             font-weight: 700;
-            background: linear-gradient(135deg, #c084fc, #7c3aed, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent);
             margin-bottom: 6px;
         }
 
@@ -98,11 +108,12 @@
 
         /* 终端预览 */
         .terminal {
-            background: #1e1e2e;
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
             transition: background 0.3s ease;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
         }
 
         .terminal.light-mode {
@@ -114,7 +125,9 @@
             align-items: center;
             gap: 6px;
             padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.15);
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            position: relative;
         }
 
         .terminal.light-mode .terminal-bar {
@@ -140,11 +153,17 @@
         }
 
         .terminal-title {
-            flex: 1;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
             text-align: center;
-            font-size: 0.72rem;
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-weight: 500;
+            pointer-events: none;
         }
 
         .terminal.light-mode .terminal-title {
@@ -202,7 +221,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            background: var(--accent);
             color: white;
             border: none;
             border-radius: var(--radius-sm);
@@ -212,12 +231,12 @@
             font-family: inherit;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 4px 20px rgba(180, 83, 9, 0.3);
         }
 
         .copy-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 28px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 6px 28px rgba(180, 83, 9, 0.4);
         }
 
         .copy-btn:active {
@@ -225,7 +244,7 @@
         }
 
         .copy-btn.copied {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
+            background: var(--green);
             box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
         }
 
@@ -345,8 +364,8 @@
 
         .step-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #7c3aed, #6366f1);
-            color: white;
+            background: var(--surface-3);
+            color: var(--text);
             font-size: 0.68rem;
             font-weight: 700;
             padding: 2px 8px;
