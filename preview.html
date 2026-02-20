@@ -1136,14 +1136,45 @@ fi` : '# Git 信息已关闭'}
         // Python 配置脚本（写入 settings.json）预先 base64 编码，避免命令行引号冲突
         const CONFIG_PY_B64 = 'aW1wb3J0IGpzb24sIG9zCnAgPSBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zZXR0aW5ncy5qc29uIikKcyA9IGpzb24ubG9hZChvcGVuKHApKSBpZiBvcy5wYXRoLmV4aXN0cyhwKSBlbHNlIHt9CnNbInN0YXR1c0xpbmUiXSA9IHsidHlwZSI6ICJjb21tYW5kIiwgImNvbW1hbmQiOiBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zdGF0dXNsaW5lLnNoIil9Cmpzb24uZHVtcChzLCBvcGVuKHAsICJ3IiksIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpCg==';
 
-        function copyInstallCmd() {
+function copyInstallCmd() {
             const script = generateScript();
-            // 两段 base64：脚本本体 + 配置脚本，命令里完全没有双引号，彻底避免 shell 解析问题
+            // 编码脚本本体
             const b64 = btoa(unescape(encodeURIComponent(script)));
+            
+            /**
+             * 关键修复逻辑：
+             * 1. 使用 Python 检测路径分隔符
+             * 2. 如果是 Windows (\)，则将 C:\ 转换为 /c/ 并将 \ 替换为 /
+             * 3. 强制在 command 前加上 'bash ' 以确保正确解析
+             */
+            const CONFIG_PY = `
+import json, os
+p = os.path.expanduser("~/.claude/settings.json")
+s = json.load(open(p)) if os.path.exists(p) else {}
+raw_path = os.path.expanduser("~/.claude/statusline.sh")
+# Windows 路径兼容性处理
+if "\\\\" in raw_path or (":" in raw_path and raw_path[1] == ":"):
+    # 转换为 Unix 风格: C:\\Users -> /c/Users
+    if ":" in raw_path:
+        parts = raw_path.split(":")
+        drive = parts[0].lower()
+        path = parts[1].replace("\\\\", "/")
+        final_path = f"/{drive}{path}"
+    else:
+        final_path = raw_path.replace("\\\\", "/")
+    cmd = f"bash {final_path}"
+else:
+    cmd = raw_path
+
+s["statusLine"] = {"type": "command", "command": cmd}
+json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
+`;
+            const CONFIG_PY_B64 = btoa(CONFIG_PY.trim());
+
             const command = `echo '${b64}' | base64 -d > ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh && echo '${CONFIG_PY_B64}' | base64 -d | python3 && echo 'Statusline installed!'`;
 
+            // 复制到剪贴板逻辑
             const doCopy = (text) => {
-                // 优先用 clipboard API，file:// 下 fallback 到 execCommand
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text));
                 } else {
@@ -1175,7 +1206,7 @@ fi` : '# Git 信息已关闭'}
             doCopy(command);
         }
 
-        // ===== 初始化 =====
+        // 初始化
         renderOptions();
         updatePreview();
     </script>
