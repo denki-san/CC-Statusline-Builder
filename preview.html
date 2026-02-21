@@ -598,40 +598,27 @@
                     <p>自定义你的 Claude Code 状态栏，实时预览，一键安装</p>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-                    <div style="display: flex; justify-content: flex-end;">
-                        <div class="mode-toggles">
-                            <button class="mode-toggle active" data-mode="dark" onclick="setPreviewMode('dark')">🌙
-                                Dark</button>
-                            <button class="mode-toggle" data-mode="light" onclick="setPreviewMode('light')">☀️
-                                Light</button>
-                        </div>
+                <div class="terminal" id="terminal">
+                    <div class="terminal-bar">
+                        <div class="terminal-dot red"></div>
+                        <div class="terminal-dot yellow"></div>
+                        <div class="terminal-dot green"></div>
+                        <div class="terminal-title">statusline preview</div>
                     </div>
-
-                    <div class="terminal" id="terminal">
-                        <div class="terminal-bar">
-                            <div class="terminal-dot red"></div>
-                            <div class="terminal-dot yellow"></div>
-                            <div class="terminal-dot green"></div>
-                            <div class="terminal-title">statusline preview</div>
-                        </div>
-                        <div class="terminal-body">
-                            <div class="status-line-1" id="statusLine1"></div>
-                            <div class="status-line-2" id="statusLine2"></div>
-                        </div>
+                    <div class="terminal-body">
+                        <div class="status-line-1" id="statusLine1"></div>
+                        <div class="status-line-2" id="statusLine2"></div>
                     </div>
                 </div>
 
-                <!-- OS Tabs -->
-                <div class="method-tabs" style="margin-top: 24px; margin-bottom: 0;">
-                    <div class="method-tab active" onclick="switchOS('unix')">Mac / Linux / Git Bash</div>
-                    <div class="method-tab" onclick="switchOS('win')">Windows (PowerShell)</div>
-                </div>
-
-                <div class="actions-row" style="margin-top: 16px; justify-content: center;">
-                    <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()"
-                        style="width: 100%; justify-content: center; padding: 14px; font-size: 1rem;">📋 Copy Bash
-                        Cmd</button>
+                <div class="actions-row">
+                    <div class="mode-toggles">
+                        <button class="mode-toggle active" data-mode="dark" onclick="setPreviewMode('dark')">🌙
+                            Dark</button>
+                        <button class="mode-toggle" data-mode="light" onclick="setPreviewMode('light')">☀️
+                            Light</button>
+                    </div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()">📋 Copy Install Cmd</button>
                 </div>
 
                 <!-- How to Use（复制后展开） -->
@@ -811,7 +798,6 @@
             gitShow: true,
             gitPrefix: 'none',
             gitMode: 'minimal',
-            osMethod: 'unix',
         };
 
         // ===== 渲染配置面板 =====
@@ -898,18 +884,12 @@
             updatePreview();
         }
 
-        // ===== OS 切换 =====
-        function switchOS(method) {
+        // ===== 安装方式切换 =====
+        function switchMethod(method) {
             document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.method-tab[onclick="switchOS('${method}')"]`).classList.add('active');
-            state.osMethod = method;
-
-            const btn = document.getElementById('copyBtn');
-            if (method === 'win') {
-                btn.innerHTML = '📋 Copy PowerShell Cmd';
-            } else {
-                btn.innerHTML = '📋 Copy Bash Cmd';
-            }
+            document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.method-tab[onclick="switchMethod('${method}')"]`).classList.add('active');
+            document.getElementById(`method-${method}`).classList.add('active');
         }
 
         // ===== 预览模式 =====
@@ -1157,28 +1137,22 @@ fi` : '# Git 信息已关闭'}
         const CONFIG_PY_B64 = 'aW1wb3J0IGpzb24sIG9zCnAgPSBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zZXR0aW5ncy5qc29uIikKcyA9IGpzb24ubG9hZChvcGVuKHApKSBpZiBvcy5wYXRoLmV4aXN0cyhwKSBlbHNlIHt9CnNbInN0YXR1c0xpbmUiXSA9IHsidHlwZSI6ICJjb21tYW5kIiwgImNvbW1hbmQiOiBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zdGF0dXNsaW5lLnNoIil9Cmpzb24uZHVtcChzLCBvcGVuKHAsICJ3IiksIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpCg==';
 
         function copyInstallCmd() {
-            let command = "";
-            if (state.osMethod === 'win') {
-                command = "# PowerShell 版本的安装脚本正在开发中...\\n# 目前请使用 Git Bash 并切换回 Mac/Linux 选项卡进行安装。\\n# 参考仓库: https://github.com/denki-san/CC-Statusline-Builder";
-            } else {
-                const script = generateScript();
-                // 编码脚本本体
-                const b64 = btoa(unescape(encodeURIComponent(script)));
+            const script = generateScript();
+            // 编码脚本本体
+            const b64 = btoa(unescape(encodeURIComponent(script)));
 
-                /**
-                 * 关键修复逻辑：
-                 * 1. 使用 Python 检测路径分隔符
-                 * 2. 如果是 Windows (\\)，则将 C:\\ 转换为 /c/ 并将 \\ 替换为 /
-                 * 3. 强制在 command 前加上 'bash ' 以确保正确解析
-                 */
-                const CONFIG_PY = `
+            /**
+             * 关键修复逻辑：
+             * 1. 使用 Python 检测路径分隔符
+             * 2. 如果是 Windows (\)，则将 C:\ 转换为 /c/ 并将 \ 替换为 /
+             * 3. 强制在 command 前加上 'bash ' 以确保正确解析
+             */
+            const CONFIG_PY = `
 import json, os
 p = os.path.expanduser("~/.claude/settings.json")
 s = json.load(open(p)) if os.path.exists(p) else {}
 raw_path = os.path.expanduser("~/.claude/statusline.sh")
-# Windows 路径兼容性处理
 if "\\\\" in raw_path or (":" in raw_path and raw_path[1] == ":"):
-    # 转换为 Unix 风格: C:\\Users -> /c/Users
     if ":" in raw_path:
         parts = raw_path.split(":")
         drive = parts[0].lower()
@@ -1193,10 +1167,9 @@ else:
 s["statusLine"] = {"type": "command", "command": cmd}
 json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
 `;
-                const CONFIG_PY_B64_LOCAL = btoa(CONFIG_PY.trim());
+            const CONFIG_PY_B64 = btoa(CONFIG_PY.trim());
 
-                command = `echo '${b64}' | base64 -d > ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh && echo '${CONFIG_PY_B64_LOCAL}' | base64 -d | python3 && echo 'Statusline installed!'`;
-            }
+            const command = `echo '${b64}' | base64 -d > ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh && echo '${CONFIG_PY_B64}' | base64 -d | python3 && echo 'Statusline installed!'`;
 
             // 复制到剪贴板逻辑
             const doCopy = (text) => {
@@ -1221,45 +1194,9 @@ json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
                 const btn = document.getElementById('copyBtn');
                 btn.innerHTML = '✅ Copied!';
                 btn.classList.add('copied');
-
-                const howToUseInner = document.querySelector('.how-to-use-inner');
-                if (state.osMethod === 'win') {
-                    howToUseInner.innerHTML = `
-                        <h3>🚧 施工中...</h3>
-                        <div class="steps">
-                            <div class="step">
-                                <div class="step-num">!</div>
-                                <div class="step-text">原生 Windows PowerShell 支持正在开发中。</div>
-                            </div>
-                            <div class="step">
-                                <div class="step-num" style="background:var(--surface-3);color:var(--text)">ℹ️</div>
-                                <div class="step-text">请暂时选择 <strong>Mac/Linux / Git Bash</strong> 选项卡，复制命令并在 <strong>Git Bash</strong> 环境中执行。</div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    howToUseInner.innerHTML = `
-                        <h3>✅ 命令已复制！</h3>
-                        <div class="steps">
-                            <div class="step">
-                                <div class="step-num">1</div>
-                                <div class="step-text"><strong>打开终端</strong>（如果是 Windows 请打开 <strong>Git Bash</strong>），粘贴命令并回车 — 脚本会自动安装并完成配置</div>
-                            </div>
-                            <div class="step">
-                                <div class="step-num">2</div>
-                                <div class="step-text">看到 <code>✅ Statusline installed!</code> 后，<strong>重启 Claude Code</strong> 即生效</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:14px; font-size:0.78rem; color:var(--text-muted);">
-                            仓库 &amp; 问题反馈：<a href="https://github.com/denki-san/CC-Statusline-Builder" target="_blank"
-                                style="color:var(--accent); text-decoration:none;">github.com/denki-san/CC-Statusline-Builder</a>
-                        </div>
-                    `;
-                }
-
                 document.getElementById('howToUse').classList.add('visible');
                 setTimeout(() => {
-                    btn.innerHTML = state.osMethod === 'win' ? '📋 Copy PowerShell Cmd' : '📋 Copy Bash Cmd';
+                    btn.innerHTML = '📋 Copy Install Cmd';
                     btn.classList.remove('copied');
                 }, 3000);
             };
