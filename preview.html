@@ -598,7 +598,7 @@
                     <p>自定义你的 Claude Code 状态栏，实时预览，一键安装</p>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
                     <div style="display: flex; justify-content: flex-end;">
                         <div class="mode-toggles">
                             <button class="mode-toggle active" data-mode="dark" onclick="setPreviewMode('dark')">🌙
@@ -607,6 +607,7 @@
                                 Light</button>
                         </div>
                     </div>
+
                     <div class="terminal" id="terminal">
                         <div class="terminal-bar">
                             <div class="terminal-dot red"></div>
@@ -619,203 +620,203 @@
                             <div class="status-line-2" id="statusLine2"></div>
                         </div>
                     </div>
-
-                    <!-- OS Tabs -->
-                    <div class="method-tabs" style="margin-top: 24px; margin-bottom: 0;">
-                        <div class="method-tab active" onclick="switchOS('unix')">Mac / Linux / Git Bash</div>
-                        <div class="method-tab" onclick="switchOS('win')">Windows (PowerShell)</div>
-                    </div>
-
-                    <div class="actions-row" style="margin-top: 16px;">
-                        <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()"
-                            style="width: 100%; justify-content: center; font-size: 1rem; padding: 12px;">📋 Copy Bash
-                            Cmd</button>
-                    </div>
-
-                    <!-- How to Use（复制后展开） -->
-                    <div class="how-to-use" id="howToUse">
-                        <div class="how-to-use-inner">
-                            <h3>✅ 命令已复制！</h3>
-                            <div class="steps">
-                                <div class="step">
-                                    <div class="step-num">1</div>
-                                    <div class="step-text"><strong>打开终端</strong>，粘贴命令并回车 — 脚本会自动安装并完成配置</div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-num">2</div>
-                                    <div class="step-text">看到 <code>✅ Statusline installed!</code> 后，<strong>重启 Claude
-                                            Code</strong> 即生效</div>
-                                </div>
-                            </div>
-                            <div style="margin-top:14px; font-size:0.78rem; color:var(--text-muted);">
-                                仓库 &amp; 问题反馈：<a href="https://github.com/denki-san/CC-Statusline-Builder"
-                                    target="_blank"
-                                    style="color:var(--accent); text-decoration:none;">github.com/denki-san/CC-Statusline-Builder</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </div>
 
-            <!-- ===== 右侧可滚动配置区 ===== -->
-            <div class="right-panel">
-                <div class="config-panel">
+                <!-- OS Tabs -->
+                <div class="method-tabs" style="margin-top: 24px; margin-bottom: 0;">
+                    <div class="method-tab active" onclick="switchOS('unix')">Mac / Linux / Git Bash</div>
+                    <div class="method-tab" onclick="switchOS('win')">Windows (PowerShell)</div>
+                </div>
 
-                    <!-- 进度条样式 -->
-                    <div class="config-section">
-                        <h3>进度条样式</h3>
-                        <div class="option-grid cols-2" id="progressStyleGrid"></div>
-                    </div>
+                <div class="actions-row" style="margin-top: 16px; justify-content: center;">
+                    <button class="copy-btn" id="copyBtn" onclick="copyInstallCmd()"
+                        style="width: 100%; justify-content: center; padding: 14px; font-size: 1rem;">📋 Copy Bash
+                        Cmd</button>
+                </div>
 
-                    <!-- 配色方案 -->
-                    <div class="config-section">
-                        <h3>配色方案</h3>
-                        <div class="option-grid cols-1" id="colorPresetGrid"></div>
-                    </div>
-
-                    <!-- 目录前缀 -->
-                    <div class="config-section">
-                        <h3>目录前缀</h3>
-                        <div class="option-grid cols-3" id="dirPrefixGrid"></div>
-                    </div>
-
-                    <!-- Token 格式 -->
-                    <div class="config-section">
-                        <h3>Token 显示格式</h3>
-                        <div class="option-grid cols-3" id="tokenFormatGrid"></div>
-                    </div>
-
-                    <!-- Git 状态 -->
-                    <div class="config-section">
-                        <h3>Git 状态</h3>
-                        <div class="toggle-row">
-                            <label>显示 Git 信息</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="gitToggle" checked onchange="toggleGit(this.checked)">
-                                <span class="toggle-slider"></span>
-                            </label>
+                <!-- How to Use（复制后展开） -->
+                <div class="how-to-use" id="howToUse">
+                    <div class="how-to-use-inner">
+                        <h3>✅ 命令已复制！</h3>
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-num">1</div>
+                                <div class="step-text"><strong>打开终端</strong>，粘贴命令并回车 — 脚本会自动安装并完成配置</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-num">2</div>
+                                <div class="step-text">看到 <code>✅ Statusline installed!</code> 后，<strong>重启 Claude
+                                        Code</strong> 即生效</div>
+                            </div>
                         </div>
-                        <div class="git-sub-options expanded" id="gitSubOptions">
-                            <h3 style="margin-top:4px">分支前缀</h3>
-                            <div class="option-grid cols-3" id="gitPrefixGrid"></div>
-                            <h3 style="margin-top:14px">状态模式</h3>
-                            <div class="option-grid cols-2" id="gitModeGrid"></div>
+                        <div style="margin-top:14px; font-size:0.78rem; color:var(--text-muted);">
+                            仓库 &amp; 问题反馈：<a href="https://github.com/denki-san/CC-Statusline-Builder" target="_blank"
+                                style="color:var(--accent); text-decoration:none;">github.com/denki-san/CC-Statusline-Builder</a>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
 
-        <script>
-            // ===== 配置数据 =====
+        <!-- ===== 右侧可滚动配置区 ===== -->
+        <div class="right-panel">
+            <div class="config-panel">
 
-            const progressStyles = [
-                { id: 'classic', name: 'Classic', filled: '▓', empty: '░', preview: '▓▓▓░░' },
-                { id: 'gradient', name: 'Gradient', filled: '█', empty: '▓▒░', preview: '███▓▒░', gradient: true },
-                { id: 'diamond', name: 'Diamond', filled: '◆', empty: '◇', preview: '◆◆◆◇◇' },
-                { id: 'dot', name: 'Dot', filled: '●', empty: '○', preview: '●●●○○' },
-                { id: 'arrow', name: 'Arrow', filled: '▰', empty: '▱', preview: '▰▰▰▱▱' },
-                { id: 'emoji', name: 'Emoji', filled: '🟢', empty: '⚪', preview: '🟢🟢🟢⚪⚪' },
-            ];
+                <!-- 进度条样式 -->
+                <div class="config-section">
+                    <h3>进度条样式</h3>
+                    <div class="option-grid cols-2" id="progressStyleGrid"></div>
+                </div>
 
-            const colorPresets = [
-                // ===== 6 个暗色方案 =====
-                {
-                    id: 'dracula', name: 'Dracula', type: 'dark',
-                    model: '#af87ff', low: '#5fff87', mid: '#ffffaf', high: '#ff5f5f', token: '#afafd7', bar: '#af87ff',
-                    ansi: { model: 141, low: 84, mid: 229, high: 203, token: 189, bar: 141 }
-                },
-                {
-                    id: 'tokyo-night', name: 'Tokyo Night', type: 'dark',
-                    model: '#bb9af7', low: '#7dcfff', mid: '#e0af68', high: '#f7768e', token: '#a9b1d6', bar: '#7aa2f7',
-                    ansi: { model: 141, low: 117, mid: 179, high: 204, token: 146, bar: 111 }
-                },
-                {
-                    id: 'catppuccin', name: 'Catppuccin Mocha', type: 'dark',
-                    model: '#cba6f7', low: '#a6e3a1', mid: '#f9e2af', high: '#f38ba8', token: '#bac2de', bar: '#89b4fa',
-                    ansi: { model: 183, low: 150, mid: 223, high: 211, token: 146, bar: 111 }
-                },
-                {
-                    id: 'gruvbox', name: 'Gruvbox Dark', type: 'dark',
-                    model: '#d3869b', low: '#b8bb26', mid: '#fabd2f', high: '#fb4934', token: '#d5c4a1', bar: '#fe8019',
-                    ansi: { model: 175, low: 142, mid: 214, high: 203, token: 187, bar: 208 }
-                },
-                {
-                    id: 'nord', name: 'Nord', type: 'dark',
-                    model: '#b48ead', low: '#a3be8c', mid: '#ebcb8b', high: '#bf616a', token: '#81a1c1', bar: '#88c0d0',
-                    ansi: { model: 139, low: 144, mid: 222, high: 131, token: 110, bar: 116 }
-                },
-                {
-                    id: 'one-dark', name: 'One Dark', type: 'dark',
-                    model: '#c678dd', low: '#98c379', mid: '#e5c07b', high: '#e06c75', token: '#abb2bf', bar: '#61afef',
-                    ansi: { model: 176, low: 114, mid: 180, high: 168, token: 145, bar: 75 }
-                },
-                // ===== 2 个亮色方案 =====
-                {
-                    id: 'github-light', name: 'GitHub Light', type: 'light',
-                    model: '#6f42c1', low: '#22863a', mid: '#b08800', high: '#d73a49', token: '#586069', bar: '#0366d6',
-                    ansi: { model: 97, low: 28, mid: 136, high: 160, token: 59, bar: 33 }
-                },
-                {
-                    id: 'solarized-light', name: 'Solarized Light', type: 'light',
-                    model: '#6c71c4', low: '#859900', mid: '#b58900', high: '#dc322f', token: '#657b83', bar: '#268bd2',
-                    ansi: { model: 62, low: 106, mid: 136, high: 160, token: 66, bar: 33 }
-                },
-                // ===== 2 个单色方案 =====
-                {
-                    id: 'mono-dark', name: 'Mono Dark', type: 'dark',
-                    model: '#e0e0e0', low: '#a0a0a0', mid: '#c0c0c0', high: '#ff6b6b', token: '#888888', bar: '#b0b0b0',
-                    ansi: { model: 254, low: 247, mid: 250, high: 203, token: 245, bar: 249 }
-                },
-                {
-                    id: 'mono-light', name: 'Mono Light', type: 'light',
-                    model: '#333333', low: '#555555', mid: '#444444', high: '#cc3333', token: '#777777', bar: '#444444',
-                    ansi: { model: 236, low: 240, mid: 238, high: 160, token: 243, bar: 238 }
-                },
-            ];
+                <!-- 配色方案 -->
+                <div class="config-section">
+                    <h3>配色方案</h3>
+                    <div class="option-grid cols-1" id="colorPresetGrid"></div>
+                </div>
 
-            const dirPrefixes = [
-                { id: 'none', name: '无', char: '' },
-                { id: 'folder', name: '📁', char: '📁' },
-                { id: 'bolt', name: '⚡', char: '⚡' },
-                { id: 'arrow', name: '>', char: '>' },
-                { id: 'flower', name: '🌸', char: '🌸' },
-            ];
+                <!-- 目录前缀 -->
+                <div class="config-section">
+                    <h3>目录前缀</h3>
+                    <div class="option-grid cols-3" id="dirPrefixGrid"></div>
+                </div>
 
-            const tokenFormats = [
-                { id: 'full', name: '完整', template: 'Total: input {in}k / output {out}k' },
-                { id: 'compact', name: '紧凑', template: '↑{in}k ↓{out}k' },
-                { id: 'minimal', name: '简约', template: 'in:{in}k out:{out}k' },
-            ];
+                <!-- Token 格式 -->
+                <div class="config-section">
+                    <h3>Token 显示格式</h3>
+                    <div class="option-grid cols-3" id="tokenFormatGrid"></div>
+                </div>
 
-            const gitPrefixes = [
-                { id: 'none', name: '无', char: '' },
-                { id: 'leaf', name: '🌿', char: '🌿' },
-                { id: 'git', name: 'Git', char: 'git:' },
-            ];
+                <!-- Git 状态 -->
+                <div class="config-section">
+                    <h3>Git 状态</h3>
+                    <div class="toggle-row">
+                        <label>显示 Git 信息</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gitToggle" checked onchange="toggleGit(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="git-sub-options expanded" id="gitSubOptions">
+                        <h3 style="margin-top:4px">分支前缀</h3>
+                        <div class="option-grid cols-3" id="gitPrefixGrid"></div>
+                        <h3 style="margin-top:14px">状态模式</h3>
+                        <div class="option-grid cols-2" id="gitModeGrid"></div>
+                    </div>
+                </div>
 
-            const gitModes = [
-                { id: 'minimal', name: '极简', preview: '+3 ~2 ?1' },
-                { id: 'detailed', name: '详细', preview: '3 new, 2 modified, 1 untracked' },
-            ];
+            </div>
+        </div>
+    </div>
 
-            // ===== 状态 =====
-            let state = {
-                progressStyle: 'classic',
-                colorPreset: 'dracula',
-                dirPrefix: 'none',
-                tokenFormat: 'full',
-                previewMode: 'dark',
-                gitShow: true,
-                gitPrefix: 'none',
-                gitMode: 'minimal',
-                osMethod: 'unix',
-            };
+    <script>
+        // ===== 配置数据 =====
 
-            // ===== 渲染配置面板 =====
-            function renderOptions() {
-                document.getElementById('progressStyleGrid').innerHTML = progressStyles.map(s => `
+        const progressStyles = [
+            { id: 'classic', name: 'Classic', filled: '▓', empty: '░', preview: '▓▓▓░░' },
+            { id: 'gradient', name: 'Gradient', filled: '█', empty: '▓▒░', preview: '███▓▒░', gradient: true },
+            { id: 'diamond', name: 'Diamond', filled: '◆', empty: '◇', preview: '◆◆◆◇◇' },
+            { id: 'dot', name: 'Dot', filled: '●', empty: '○', preview: '●●●○○' },
+            { id: 'arrow', name: 'Arrow', filled: '▰', empty: '▱', preview: '▰▰▰▱▱' },
+            { id: 'emoji', name: 'Emoji', filled: '🟢', empty: '⚪', preview: '🟢🟢🟢⚪⚪' },
+        ];
+
+        const colorPresets = [
+            // ===== 6 个暗色方案 =====
+            {
+                id: 'dracula', name: 'Dracula', type: 'dark',
+                model: '#af87ff', low: '#5fff87', mid: '#ffffaf', high: '#ff5f5f', token: '#afafd7', bar: '#af87ff',
+                ansi: { model: 141, low: 84, mid: 229, high: 203, token: 189, bar: 141 }
+            },
+            {
+                id: 'tokyo-night', name: 'Tokyo Night', type: 'dark',
+                model: '#bb9af7', low: '#7dcfff', mid: '#e0af68', high: '#f7768e', token: '#a9b1d6', bar: '#7aa2f7',
+                ansi: { model: 141, low: 117, mid: 179, high: 204, token: 146, bar: 111 }
+            },
+            {
+                id: 'catppuccin', name: 'Catppuccin Mocha', type: 'dark',
+                model: '#cba6f7', low: '#a6e3a1', mid: '#f9e2af', high: '#f38ba8', token: '#bac2de', bar: '#89b4fa',
+                ansi: { model: 183, low: 150, mid: 223, high: 211, token: 146, bar: 111 }
+            },
+            {
+                id: 'gruvbox', name: 'Gruvbox Dark', type: 'dark',
+                model: '#d3869b', low: '#b8bb26', mid: '#fabd2f', high: '#fb4934', token: '#d5c4a1', bar: '#fe8019',
+                ansi: { model: 175, low: 142, mid: 214, high: 203, token: 187, bar: 208 }
+            },
+            {
+                id: 'nord', name: 'Nord', type: 'dark',
+                model: '#b48ead', low: '#a3be8c', mid: '#ebcb8b', high: '#bf616a', token: '#81a1c1', bar: '#88c0d0',
+                ansi: { model: 139, low: 144, mid: 222, high: 131, token: 110, bar: 116 }
+            },
+            {
+                id: 'one-dark', name: 'One Dark', type: 'dark',
+                model: '#c678dd', low: '#98c379', mid: '#e5c07b', high: '#e06c75', token: '#abb2bf', bar: '#61afef',
+                ansi: { model: 176, low: 114, mid: 180, high: 168, token: 145, bar: 75 }
+            },
+            // ===== 2 个亮色方案 =====
+            {
+                id: 'github-light', name: 'GitHub Light', type: 'light',
+                model: '#6f42c1', low: '#22863a', mid: '#b08800', high: '#d73a49', token: '#586069', bar: '#0366d6',
+                ansi: { model: 97, low: 28, mid: 136, high: 160, token: 59, bar: 33 }
+            },
+            {
+                id: 'solarized-light', name: 'Solarized Light', type: 'light',
+                model: '#6c71c4', low: '#859900', mid: '#b58900', high: '#dc322f', token: '#657b83', bar: '#268bd2',
+                ansi: { model: 62, low: 106, mid: 136, high: 160, token: 66, bar: 33 }
+            },
+            // ===== 2 个单色方案 =====
+            {
+                id: 'mono-dark', name: 'Mono Dark', type: 'dark',
+                model: '#e0e0e0', low: '#a0a0a0', mid: '#c0c0c0', high: '#ff6b6b', token: '#888888', bar: '#b0b0b0',
+                ansi: { model: 254, low: 247, mid: 250, high: 203, token: 245, bar: 249 }
+            },
+            {
+                id: 'mono-light', name: 'Mono Light', type: 'light',
+                model: '#333333', low: '#555555', mid: '#444444', high: '#cc3333', token: '#777777', bar: '#444444',
+                ansi: { model: 236, low: 240, mid: 238, high: 160, token: 243, bar: 238 }
+            },
+        ];
+
+        const dirPrefixes = [
+            { id: 'none', name: '无', char: '' },
+            { id: 'folder', name: '📁', char: '📁' },
+            { id: 'bolt', name: '⚡', char: '⚡' },
+            { id: 'arrow', name: '>', char: '>' },
+            { id: 'flower', name: '🌸', char: '🌸' },
+        ];
+
+        const tokenFormats = [
+            { id: 'full', name: '完整', template: 'Total: input {in}k / output {out}k' },
+            { id: 'compact', name: '紧凑', template: '↑{in}k ↓{out}k' },
+            { id: 'minimal', name: '简约', template: 'in:{in}k out:{out}k' },
+        ];
+
+        const gitPrefixes = [
+            { id: 'none', name: '无', char: '' },
+            { id: 'leaf', name: '🌿', char: '🌿' },
+            { id: 'git', name: 'Git', char: 'git:' },
+        ];
+
+        const gitModes = [
+            { id: 'minimal', name: '极简', preview: '+3 ~2 ?1' },
+            { id: 'detailed', name: '详细', preview: '3 new, 2 modified, 1 untracked' },
+        ];
+
+        // ===== 状态 =====
+        let state = {
+            progressStyle: 'classic',
+            colorPreset: 'dracula',
+            dirPrefix: 'none',
+            tokenFormat: 'full',
+            previewMode: 'dark',
+            gitShow: true,
+            gitPrefix: 'none',
+            gitMode: 'minimal',
+            osMethod: 'unix',
+        };
+
+        // ===== 渲染配置面板 =====
+        function renderOptions() {
+            document.getElementById('progressStyleGrid').innerHTML = progressStyles.map(s => `
             <div class="option-card ${state.progressStyle === s.id ? 'active' : ''}"
                  onclick="select('progressStyle','${s.id}')">
                 <div class="option-preview">${s.preview}</div>
@@ -823,14 +824,14 @@
             </div>
         `).join('');
 
-                // 按类型分组渲染配色方案
-                const darkSchemes = colorPresets.filter(c => c.type === 'dark');
-                const lightSchemes = colorPresets.filter(c => c.type === 'light');
-                const monoDark = colorPresets.filter(c => c.id === 'mono-dark');
-                const monoLight = colorPresets.filter(c => c.id === 'mono-light');
-                const nonMonoSchemes = colorPresets.filter(c => !c.id.startsWith('mono-'));
+            // 按类型分组渲染配色方案
+            const darkSchemes = colorPresets.filter(c => c.type === 'dark');
+            const lightSchemes = colorPresets.filter(c => c.type === 'light');
+            const monoDark = colorPresets.filter(c => c.id === 'mono-dark');
+            const monoLight = colorPresets.filter(c => c.id === 'mono-light');
+            const nonMonoSchemes = colorPresets.filter(c => !c.id.startsWith('mono-'));
 
-                const renderColorCard = (c) => `
+            const renderColorCard = (c) => `
             <div class="option-card color-card ${state.colorPreset === c.id ? 'active' : ''}"
                  onclick="select('colorPreset','${c.id}')">
                 <div class="color-dots">
@@ -844,10 +845,10 @@
             </div>
             `;
 
-                document.getElementById('colorPresetGrid').innerHTML =
-                    colorPresets.map(renderColorCard).join('');
+            document.getElementById('colorPresetGrid').innerHTML =
+                colorPresets.map(renderColorCard).join('');
 
-                document.getElementById('dirPrefixGrid').innerHTML = dirPrefixes.map(d => `
+            document.getElementById('dirPrefixGrid').innerHTML = dirPrefixes.map(d => `
             <div class="option-card ${state.dirPrefix === d.id ? 'active' : ''}"
                  onclick="select('dirPrefix','${d.id}')">
                 <div class="option-preview">${d.char || '—'}</div>
@@ -855,15 +856,15 @@
             </div>
         `).join('');
 
-                document.getElementById('tokenFormatGrid').innerHTML = tokenFormats.map(t => `
+            document.getElementById('tokenFormatGrid').innerHTML = tokenFormats.map(t => `
             <div class="option-card ${state.tokenFormat === t.id ? 'active' : ''}"
                  onclick="select('tokenFormat','${t.id}')">
                 <div class="option-label">${t.name}</div>
             </div>
         `).join('');
 
-                // Git 前缀
-                document.getElementById('gitPrefixGrid').innerHTML = gitPrefixes.map(g => `
+            // Git 前缀
+            document.getElementById('gitPrefixGrid').innerHTML = gitPrefixes.map(g => `
             <div class="option-card ${state.gitPrefix === g.id ? 'active' : ''}"
                  onclick="select('gitPrefix','${g.id}')">
                 <div class="option-preview">${g.char || '—'}</div>
@@ -871,8 +872,8 @@
             </div>
         `).join('');
 
-                // Git 模式
-                document.getElementById('gitModeGrid').innerHTML = gitModes.map(m => `
+            // Git 模式
+            document.getElementById('gitModeGrid').innerHTML = gitModes.map(m => `
             <div class="option-card ${state.gitMode === m.id ? 'active' : ''}"
                  onclick="select('gitMode','${m.id}')">
                 <div class="option-preview" style="font-size:0.78rem">${m.preview}</div>
@@ -880,163 +881,163 @@
             </div>
         `).join('');
 
-                // Git toggle 状态同步
-                document.getElementById('gitToggle').checked = state.gitShow;
-                document.getElementById('gitSubOptions').classList.toggle('expanded', state.gitShow);
+            // Git toggle 状态同步
+            document.getElementById('gitToggle').checked = state.gitShow;
+            document.getElementById('gitSubOptions').classList.toggle('expanded', state.gitShow);
+        }
+
+        function select(key, value) {
+            state[key] = value;
+            renderOptions();
+            updatePreview();
+        }
+
+        function toggleGit(checked) {
+            state.gitShow = checked;
+            renderOptions();
+            updatePreview();
+        }
+
+        // ===== OS 切换 =====
+        function switchOS(method) {
+            document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.method-tab[onclick="switchOS('${method}')"]`).classList.add('active');
+            state.osMethod = method;
+
+            const btn = document.getElementById('copyBtn');
+            if (method === 'win') {
+                btn.innerHTML = '📋 Copy PowerShell Cmd';
+            } else {
+                btn.innerHTML = '📋 Copy Bash Cmd';
+            }
+        }
+
+        // ===== 预览模式 =====
+        function setPreviewMode(mode) {
+            state.previewMode = mode;
+            document.getElementById('terminal').classList.toggle('light-mode', mode === 'light');
+            document.querySelectorAll('.mode-toggle').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            updatePreview();
+        }
+
+        // ===== 实时预览 =====
+        function updatePreview() {
+            const color = colorPresets.find(c => c.id === state.colorPreset);
+            const pStyle = progressStyles.find(s => s.id === state.progressStyle);
+            const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
+            const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
+            const isLight = state.previewMode === 'light';
+
+            const percent = 32;
+            const filled = Math.round(percent / 10);
+            const empty = 10 - filled;
+
+            // 生成进度条
+            let bar;
+            if (pStyle.gradient) {
+                // 渐变模式：███▓▒░░░░░
+                bar = pStyle.filled.repeat(filled);
+                if (empty > 0) bar += '▓';
+                if (empty > 1) bar += '▒';
+                if (empty > 2) bar += '░'.repeat(empty - 2);
+            } else {
+                bar = pStyle.filled.repeat(filled) + pStyle.empty.repeat(empty);
             }
 
-            function select(key, value) {
-                state[key] = value;
-                renderOptions();
-                updatePreview();
-            }
+            const tokenText = tFormat.template.replace('{in}', '216').replace('{out}', '15');
+            // 进度条使用配色主题中的单一主题色
+            const barColor = color.bar;
 
-            function toggleGit(checked) {
-                state.gitShow = checked;
-                renderOptions();
-                updatePreview();
-            }
+            document.getElementById('statusLine1').innerHTML =
+                `<span style="color:${color.model}">[Opus 4.6]</span> ` +
+                `<span style="color:${barColor}">${bar} ${percent}%</span> ` +
+                `<span style="color:${color.token}; opacity:0.8">| ${tokenText}</span>`;
 
-            // ===== OS 切换 =====
-            function switchOS(method) {
-                document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-                document.querySelector(`.method-tab[onclick="switchOS('${method}')"]`).classList.add('active');
-                state.osMethod = method;
+            const dirColor = isLight ? '#444' : color.low;
+            const gitColor = isLight ? '#666' : color.model;
+            const dirChar = prefix.char || '';
 
-                const btn = document.getElementById('copyBtn');
-                if (method === 'win') {
-                    btn.innerHTML = '📋 Copy PowerShell Cmd';
-                } else {
-                    btn.innerHTML = '📋 Copy Bash Cmd';
-                }
-            }
+            let line2 = `<span style="color:${dirColor}">${dirChar}~/claude-code</span>`;
 
-            // ===== 预览模式 =====
-            function setPreviewMode(mode) {
-                state.previewMode = mode;
-                document.getElementById('terminal').classList.toggle('light-mode', mode === 'light');
-                document.querySelectorAll('.mode-toggle').forEach(b => {
-                    b.classList.toggle('active', b.dataset.mode === mode);
-                });
-                updatePreview();
-            }
-
-            // ===== 实时预览 =====
-            function updatePreview() {
-                const color = colorPresets.find(c => c.id === state.colorPreset);
-                const pStyle = progressStyles.find(s => s.id === state.progressStyle);
-                const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
-                const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
-                const isLight = state.previewMode === 'light';
-
-                const percent = 32;
-                const filled = Math.round(percent / 10);
-                const empty = 10 - filled;
-
-                // 生成进度条
-                let bar;
-                if (pStyle.gradient) {
-                    // 渐变模式：███▓▒░░░░░
-                    bar = pStyle.filled.repeat(filled);
-                    if (empty > 0) bar += '▓';
-                    if (empty > 1) bar += '▒';
-                    if (empty > 2) bar += '░'.repeat(empty - 2);
-                } else {
-                    bar = pStyle.filled.repeat(filled) + pStyle.empty.repeat(empty);
-                }
-
-                const tokenText = tFormat.template.replace('{in}', '216').replace('{out}', '15');
-                // 进度条使用配色主题中的单一主题色
-                const barColor = color.bar;
-
-                document.getElementById('statusLine1').innerHTML =
-                    `<span style="color:${color.model}">[Opus 4.6]</span> ` +
-                    `<span style="color:${barColor}">${bar} ${percent}%</span> ` +
-                    `<span style="color:${color.token}; opacity:0.8">| ${tokenText}</span>`;
-
-                const dirColor = isLight ? '#444' : color.low;
-                const gitColor = isLight ? '#666' : color.model;
-                const dirChar = prefix.char || '';
-
-                let line2 = `<span style="color:${dirColor}">${dirChar}~/claude-code</span>`;
-
-                if (state.gitShow) {
-                    const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
-                    const branchLabel = gPrefix.char ? `${gPrefix.char}(main)` : '(main)';
-                    line2 += ` <span style="color:${gitColor}">${branchLabel}</span>`;
-                    line2 += ` <span style="color:${color.high}">✗</span> `;
-
-                    if (state.gitMode === 'minimal') {
-                        line2 += `<span style="color:${color.low}">+3</span> `;
-                        line2 += `<span style="color:${color.mid}">~2</span> `;
-                        line2 += `<span style="color:${color.token}">?1</span>`;
-                    } else if (state.gitMode === 'short') {
-                        line2 += `<span style="color:${color.low}">A3</span> `;
-                        line2 += `<span style="color:${color.mid}">M2</span> `;
-                        line2 += `<span style="color:${color.token}">?1</span>`;
-                    } else {
-                        line2 += `<span style="color:${color.low}">3 new</span> `;
-                        line2 += `<span style="color:${color.mid}">2 modified</span> `;
-                        line2 += `<span style="color:${color.token}">1 untracked</span>`;
-                    }
-                }
-
-                document.getElementById('statusLine2').innerHTML = line2;
-            }
-
-            // ===== 生成安装脚本 =====
-            function generateScript() {
-                const color = colorPresets.find(c => c.id === state.colorPreset);
-                const pStyle = progressStyles.find(s => s.id === state.progressStyle);
-                const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
-                const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
+            if (state.gitShow) {
                 const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
+                const branchLabel = gPrefix.char ? `${gPrefix.char}(main)` : '(main)';
+                line2 += ` <span style="color:${gitColor}">${branchLabel}</span>`;
+                line2 += ` <span style="color:${color.high}">✗</span> `;
 
-                let tokenPrintf;
-                if (tFormat.id === 'full') {
-                    tokenPrintf = `printf "\${TOKEN_COLOR}| Total: input %sk / output %sk\${RESET}" "$input_k" "$output_k"`;
-                } else if (tFormat.id === 'compact') {
-                    tokenPrintf = `printf "\${TOKEN_COLOR}↑%sk ↓%sk\${RESET}" "$input_k" "$output_k"`;
-                } else {
-                    tokenPrintf = `printf "\${TOKEN_COLOR}in:%sk out:%sk\${RESET}" "$input_k" "$output_k"`;
-                }
-
-                let dirDisplay;
-                if (prefix.char) {
-                    dirDisplay = `echo "${prefix.char}\${parent}/\${current}"`;
-                } else {
-                    dirDisplay = `echo "~/\${parent}/\${current}"`;
-                }
-
-                // Git 分支格式
-                let gitBranchFmt;
-                if (gPrefix.id === 'git') {
-                    gitBranchFmt = 'git:(\${git_branch})';
-                } else if (gPrefix.char) {
-                    gitBranchFmt = `${gPrefix.char}(\${git_branch})`;
-                } else {
-                    gitBranchFmt = '(\${git_branch})';
-                }
-
-                // Git 计数格式
-                let gitCountsFmt;
                 if (state.gitMode === 'minimal') {
-                    gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}+%s\${RESET}" "$added"
+                    line2 += `<span style="color:${color.low}">+3</span> `;
+                    line2 += `<span style="color:${color.mid}">~2</span> `;
+                    line2 += `<span style="color:${color.token}">?1</span>`;
+                } else if (state.gitMode === 'short') {
+                    line2 += `<span style="color:${color.low}">A3</span> `;
+                    line2 += `<span style="color:${color.mid}">M2</span> `;
+                    line2 += `<span style="color:${color.token}">?1</span>`;
+                } else {
+                    line2 += `<span style="color:${color.low}">3 new</span> `;
+                    line2 += `<span style="color:${color.mid}">2 modified</span> `;
+                    line2 += `<span style="color:${color.token}">1 untracked</span>`;
+                }
+            }
+
+            document.getElementById('statusLine2').innerHTML = line2;
+        }
+
+        // ===== 生成安装脚本 =====
+        function generateScript() {
+            const color = colorPresets.find(c => c.id === state.colorPreset);
+            const pStyle = progressStyles.find(s => s.id === state.progressStyle);
+            const prefix = dirPrefixes.find(d => d.id === state.dirPrefix);
+            const tFormat = tokenFormats.find(t => t.id === state.tokenFormat);
+            const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
+
+            let tokenPrintf;
+            if (tFormat.id === 'full') {
+                tokenPrintf = `printf "\${TOKEN_COLOR}| Total: input %sk / output %sk\${RESET}" "$input_k" "$output_k"`;
+            } else if (tFormat.id === 'compact') {
+                tokenPrintf = `printf "\${TOKEN_COLOR}↑%sk ↓%sk\${RESET}" "$input_k" "$output_k"`;
+            } else {
+                tokenPrintf = `printf "\${TOKEN_COLOR}in:%sk out:%sk\${RESET}" "$input_k" "$output_k"`;
+            }
+
+            let dirDisplay;
+            if (prefix.char) {
+                dirDisplay = `echo "${prefix.char}\${parent}/\${current}"`;
+            } else {
+                dirDisplay = `echo "~/\${parent}/\${current}"`;
+            }
+
+            // Git 分支格式
+            let gitBranchFmt;
+            if (gPrefix.id === 'git') {
+                gitBranchFmt = 'git:(\${git_branch})';
+            } else if (gPrefix.char) {
+                gitBranchFmt = `${gPrefix.char}(\${git_branch})`;
+            } else {
+                gitBranchFmt = '(\${git_branch})';
+            }
+
+            // Git 计数格式
+            let gitCountsFmt;
+            if (state.gitMode === 'minimal') {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}+%s\${RESET}" "$added"
             [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}~%s\${RESET}" "$modified"
             [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}?%s\${RESET}" "$untracked"`;
-                } else if (state.gitMode === 'short') {
-                    gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}A%s\${RESET}" "$added"
+            } else if (state.gitMode === 'short') {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}A%s\${RESET}" "$added"
             [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}M%s\${RESET}" "$modified"
             [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}?%s\${RESET}" "$untracked"`;
-                } else {
-                    gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}%s new\${RESET}" "$added"
+            } else {
+                gitCountsFmt = `[[ "$added" -gt 0 ]] && printf " \${GIT_CLEAN}%s new\${RESET}" "$added"
             [[ "$modified" -gt 0 ]] && printf " \${PROGRESS_MID}%s modified\${RESET}" "$modified"
             [[ "$untracked" -gt 0 ]] && printf " \${TOKEN_COLOR}%s untracked\${RESET}" "$untracked"`;
-                }
+            }
 
-                const a = color.ansi;
+            const a = color.ansi;
 
-                return `#!/bin/bash
+            return `#!/bin/bash
 # Statusline Builder — 自动生成
 # 配色: ${color.name} | 样式: ${pStyle.name} | 前缀: ${prefix.name}
 
@@ -1149,28 +1150,28 @@ ${state.gitShow ? `if [[ -n "$cwd" ]]; then
     fi
 fi` : '# Git 信息已关闭'}
 `;
-            }
+        }
 
-            // ===== 复制安装命令 =====
-            // Python 配置脚本（写入 settings.json）预先 base64 编码，避免命令行引号冲突
-            const CONFIG_PY_B64 = 'aW1wb3J0IGpzb24sIG9zCnAgPSBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zZXR0aW5ncy5qc29uIikKcyA9IGpzb24ubG9hZChvcGVuKHApKSBpZiBvcy5wYXRoLmV4aXN0cyhwKSBlbHNlIHt9CnNbInN0YXR1c0xpbmUiXSA9IHsidHlwZSI6ICJjb21tYW5kIiwgImNvbW1hbmQiOiBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zdGF0dXNsaW5lLnNoIil9Cmpzb24uZHVtcChzLCBvcGVuKHAsICJ3IiksIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpCg==';
+        // ===== 复制安装命令 =====
+        // Python 配置脚本（写入 settings.json）预先 base64 编码，避免命令行引号冲突
+        const CONFIG_PY_B64 = 'aW1wb3J0IGpzb24sIG9zCnAgPSBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zZXR0aW5ncy5qc29uIikKcyA9IGpzb24ubG9hZChvcGVuKHApKSBpZiBvcy5wYXRoLmV4aXN0cyhwKSBlbHNlIHt9CnNbInN0YXR1c0xpbmUiXSA9IHsidHlwZSI6ICJjb21tYW5kIiwgImNvbW1hbmQiOiBvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmNsYXVkZS9zdGF0dXNsaW5lLnNoIil9Cmpzb24uZHVtcChzLCBvcGVuKHAsICJ3IiksIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpCg==';
 
-            function copyInstallCmd() {
-                let command = "";
-                if (state.osMethod === 'win') {
-                    command = "# PowerShell 版本的安装脚本正在开发中...\\n# 目前请使用 Git Bash 并切换回 Mac/Linux 选项卡进行安装。\\n# 参考仓库: https://github.com/denki-san/CC-Statusline-Builder";
-                } else {
-                    const script = generateScript();
-                    // 编码脚本本体
-                    const b64 = btoa(unescape(encodeURIComponent(script)));
+        function copyInstallCmd() {
+            let command = "";
+            if (state.osMethod === 'win') {
+                command = "# PowerShell 版本的安装脚本正在开发中...\\n# 目前请使用 Git Bash 并切换回 Mac/Linux 选项卡进行安装。\\n# 参考仓库: https://github.com/denki-san/CC-Statusline-Builder";
+            } else {
+                const script = generateScript();
+                // 编码脚本本体
+                const b64 = btoa(unescape(encodeURIComponent(script)));
 
-                    /**
-                     * 关键修复逻辑：
-                     * 1. 使用 Python 检测路径分隔符
-                     * 2. 如果是 Windows (\\)，则将 C:\\ 转换为 /c/ 并将 \\ 替换为 /
-                     * 3. 强制在 command 前加上 'bash ' 以确保正确解析
-                     */
-                    const CONFIG_PY = `
+                /**
+                 * 关键修复逻辑：
+                 * 1. 使用 Python 检测路径分隔符
+                 * 2. 如果是 Windows (\\)，则将 C:\\ 转换为 /c/ 并将 \\ 替换为 /
+                 * 3. 强制在 command 前加上 'bash ' 以确保正确解析
+                 */
+                const CONFIG_PY = `
 import json, os
 p = os.path.expanduser("~/.claude/settings.json")
 s = json.load(open(p)) if os.path.exists(p) else {}
@@ -1192,38 +1193,38 @@ else:
 s["statusLine"] = {"type": "command", "command": cmd}
 json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
 `;
-                    const CONFIG_PY_B64_LOCAL = btoa(CONFIG_PY.trim());
+                const CONFIG_PY_B64_LOCAL = btoa(CONFIG_PY.trim());
 
-                    command = `echo '${b64}' | base64 -d > ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh && echo '${CONFIG_PY_B64_LOCAL}' | base64 -d | python3 && echo 'Statusline installed!'`;
+                command = `echo '${b64}' | base64 -d > ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh && echo '${CONFIG_PY_B64_LOCAL}' | base64 -d | python3 && echo 'Statusline installed!'`;
+            }
+
+            // 复制到剪贴板逻辑
+            const doCopy = (text) => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
                 }
+            };
 
-                // 复制到剪贴板逻辑
-                const doCopy = (text) => {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text));
-                    } else {
-                        fallbackCopy(text);
-                    }
-                };
+            const fallbackCopy = (text) => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                onCopied();
+            };
 
-                const fallbackCopy = (text) => {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    onCopied();
-                };
+            const onCopied = () => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = '✅ Copied!';
+                btn.classList.add('copied');
 
-                const onCopied = () => {
-                    const btn = document.getElementById('copyBtn');
-                    btn.innerHTML = '✅ Copied!';
-                    btn.classList.add('copied');
-
-                    const howToUseInner = document.querySelector('.how-to-use-inner');
-                    if (state.osMethod === 'win') {
-                        howToUseInner.innerHTML = `
+                const howToUseInner = document.querySelector('.how-to-use-inner');
+                if (state.osMethod === 'win') {
+                    howToUseInner.innerHTML = `
                         <h3>🚧 施工中...</h3>
                         <div class="steps">
                             <div class="step">
@@ -1236,8 +1237,8 @@ json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
                             </div>
                         </div>
                     `;
-                    } else {
-                        howToUseInner.innerHTML = `
+                } else {
+                    howToUseInner.innerHTML = `
                         <h3>✅ 命令已复制！</h3>
                         <div class="steps">
                             <div class="step">
@@ -1254,22 +1255,22 @@ json.dump(s, open(p, "w"), indent=2, ensure_ascii=False)
                                 style="color:var(--accent); text-decoration:none;">github.com/denki-san/CC-Statusline-Builder</a>
                         </div>
                     `;
-                    }
+                }
 
-                    document.getElementById('howToUse').classList.add('visible');
-                    setTimeout(() => {
-                        btn.innerHTML = state.osMethod === 'win' ? '📋 Copy PowerShell Cmd' : '📋 Copy Bash Cmd';
-                        btn.classList.remove('copied');
-                    }, 3000);
-                };
+                document.getElementById('howToUse').classList.add('visible');
+                setTimeout(() => {
+                    btn.innerHTML = state.osMethod === 'win' ? '📋 Copy PowerShell Cmd' : '📋 Copy Bash Cmd';
+                    btn.classList.remove('copied');
+                }, 3000);
+            };
 
-                doCopy(command);
-            }
+            doCopy(command);
+        }
 
-            // 初始化
-            renderOptions();
-            updatePreview();
-        </script>
+        // 初始化
+        renderOptions();
+        updatePreview();
+    </script>
 </body>
 
 </html>
