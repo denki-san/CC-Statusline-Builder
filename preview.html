@@ -943,7 +943,7 @@
 
             if (state.gitShow) {
                 const gPrefix = gitPrefixes.find(g => g.id === state.gitPrefix);
-                const branchLabel = gPrefix.char ? `${gPrefix.char}(main)` : '(main)';
+                const branchLabel = gPrefix.char ? `${gPrefix.char} (main)` : '(main)';
                 line2 += ` <span style="color:${gitColor}">${branchLabel}</span>`;
                 line2 += ` <span style="color:${color.high}">✗</span> `;
 
@@ -994,7 +994,7 @@
             if (gPrefix.id === 'git') {
                 gitBranchFmt = 'git:(\${git_branch})';
             } else if (gPrefix.char) {
-                gitBranchFmt = `${gPrefix.char}(\${git_branch})`;
+                gitBranchFmt = `${gPrefix.char} (\${git_branch})`;
             } else {
                 gitBranchFmt = '(\${git_branch})';
             }
