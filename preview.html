@@ -1021,6 +1021,16 @@
 # Statusline Builder — 自动生成
 # 配色: ${color.name} | 样式: ${pStyle.name} | 前缀: ${prefix.name}
 
+# 检测 jq 依赖
+if ! command -v jq &> /dev/null; then
+    echo "[CC-Statusline] 错误: 需要安装 jq 命令" >&2
+    echo "macOS: brew install jq" >&2
+    echo "Ubuntu/Debian: sudo apt install jq" >&2
+    echo "Fedora: sudo dnf install jq" >&2
+    echo "其他系统: https://jqlang.github.io/jq/download/" >&2
+    exit 1
+fi
+
 JSON_INPUT=$(cat)
 
 model=$(echo "$JSON_INPUT" | jq -r '.model.display_name // "Claude"')

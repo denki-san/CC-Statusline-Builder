@@ -28,8 +28,16 @@
 ## 前置要求
 
 - 终端支持 256 色
-- 已安装 `jq`
+- 已安装 `jq`（JSON 解析工具）
 - UTF-8 编码
+
+### 安装 jq
+
+- **macOS**: `brew install jq`
+- **Ubuntu / Debian**: `sudo apt install jq`
+- **Fedora**: `sudo dnf install jq`
+- **Arch**: `sudo pacman -S jq`
+- **其他系统**: 见 [jq 官方下载页](https://jqlang.github.io/jq/download/)
 
 ## 常见问题
 
