@@ -1033,7 +1033,7 @@ fi
 
 JSON_INPUT=$(cat)
 
-model=$(echo "$JSON_INPUT" | jq -r '.model.display_name // "Claude"')
+model=$(echo "$JSON_INPUT" | jq -r '.model.display_name // .model.name // .model.id // "Claude"')
 input=$(echo "$JSON_INPUT" | jq -r '.context_window.total_input_tokens // 0')
 output=$(echo "$JSON_INPUT" | jq -r '.context_window.total_output_tokens // 0')
 percent=$(echo "$JSON_INPUT" | jq -r '.context_window.used_percentage // 0')
